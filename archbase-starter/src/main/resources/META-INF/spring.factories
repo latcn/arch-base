@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.github.latcn.archbase.starter.autoconfigure.ArchBaseAutoConfiguration

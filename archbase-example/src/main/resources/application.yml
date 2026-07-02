@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:archbase_example;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+archbase:
+  enabled: true
+  application-name: archbase-example
+  
+  cqrs:
+    enabled: true
+    mode: memory
+  
+  mybatis:
+    enabled: true
+    auto-fill: true
+  
+  web:
+    enabled: true
+    exception-handler: default

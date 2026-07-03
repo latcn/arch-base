@@ -15,15 +15,16 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(name = "com.baomidou.mybatisplus.core.mapper.BaseMapper")
 public class MybatisAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    public IRepositoryFactory repositoryFactory() {
-        return new MybatisRepositoryFactory();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public IRepositoryFactory repositoryFactory() {
+		return new MybatisRepositoryFactory();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public MetaObjectHandler metaObjectHandler() {
-        return new AutoFillMetaObjectHandler();
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public MetaObjectHandler metaObjectHandler() {
+		return new AutoFillMetaObjectHandler();
+	}
+
 }

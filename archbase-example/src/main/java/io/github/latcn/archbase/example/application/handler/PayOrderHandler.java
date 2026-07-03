@@ -11,14 +11,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class PayOrderHandler implements ICommandHandler<PayOrderCommand, OrderIdResponse> {
 
-    @Autowired
-    private IOrderRepository orderRepository;
+	@Autowired
+	private IOrderRepository orderRepository;
 
-    @Override
-    public OrderIdResponse handle(PayOrderCommand command) {
-        Order order = orderRepository.findById(command.getOrderId());
-        order.pay();
-        orderRepository.save(order);
-        return new OrderIdResponse(order.getId());
-    }
+	@Override
+	public OrderIdResponse handle(PayOrderCommand command) {
+		Order order = orderRepository.findById(command.getOrderId());
+		order.pay();
+		orderRepository.save(order);
+		return new OrderIdResponse(order.getId());
+	}
+
 }

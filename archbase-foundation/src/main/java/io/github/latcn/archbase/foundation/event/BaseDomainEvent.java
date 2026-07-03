@@ -4,36 +4,40 @@ import java.time.Instant;
 import java.util.UUID;
 
 public abstract class BaseDomainEvent {
-    private final String eventId;
-    private final Instant occurredAt;
-    private final String sourceId;
 
-    protected BaseDomainEvent(String sourceId) {
-        this.eventId = UUID.randomUUID().toString();
-        this.occurredAt = Instant.now();
-        this.sourceId = sourceId;
-    }
+	private final String eventId;
 
-    protected BaseDomainEvent(String sourceId, String eventId, Instant occurredAt) {
-        this.sourceId = sourceId;
-        this.eventId = eventId;
-        this.occurredAt = occurredAt;
-    }
+	private final Instant occurredAt;
 
-    public String getEventId() {
-        return eventId;
-    }
+	private final String sourceId;
 
-    public Instant getOccurredAt() {
-        return occurredAt;
-    }
+	protected BaseDomainEvent(String sourceId) {
+		this.eventId = UUID.randomUUID().toString();
+		this.occurredAt = Instant.now();
+		this.sourceId = sourceId;
+	}
 
-    public String getSourceId() {
-        return sourceId;
-    }
+	protected BaseDomainEvent(String sourceId, String eventId, Instant occurredAt) {
+		this.sourceId = sourceId;
+		this.eventId = eventId;
+		this.occurredAt = occurredAt;
+	}
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{eventId=" + eventId + ", sourceId=" + sourceId + "}";
-    }
+	public String getEventId() {
+		return eventId;
+	}
+
+	public Instant getOccurredAt() {
+		return occurredAt;
+	}
+
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "{eventId=" + eventId + ", sourceId=" + sourceId + "}";
+	}
+
 }

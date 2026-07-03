@@ -1,4 +1,5 @@
 package io.github.latcn.archbase.core.api;
 
-public interface IQuery<T> {
+public interface IQuery {
+
 }

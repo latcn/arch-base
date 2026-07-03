@@ -6,5 +6,6 @@ import io.github.latcn.archbase.core.api.IResponse;
 @FunctionalInterface
 public interface IQueryHandler<Q extends IQuery, R extends IResponse> {
 
-    R handle(Q query);
+	R handle(Q query);
+
 }

@@ -1,21 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0           http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>io.github.latcn</groupId>
         <artifactId>archbase-parent</artifactId>
-        <version>1.0.0</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>archbase-cqrs</artifactId>
     <packaging>jar</packaging>
 
     <name>archbase-cqrs</name>
-    <description>CQRS 引擎层 - 命令/查询总线、拦截器 SPI</description>
+    <description>archbase-cqrs</description>
+    <url>https://github.com/latcn/arch-base/archbase-cqrs</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>latcn</name>
+            <email>quantum_code@yeah.net</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>git://github.com/latcn/arch-base.git</connection>
+        <url>https://github.com/latcn/arch-base</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -33,5 +47,14 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

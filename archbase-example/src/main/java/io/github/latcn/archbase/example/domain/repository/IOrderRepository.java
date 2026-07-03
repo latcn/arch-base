@@ -1,10 +1,12 @@
 package io.github.latcn.archbase.example.domain.repository;
 
-import io.github.latcn.archbase.foundation.pagination.PageQuery;
-import io.github.latcn.archbase.foundation.pagination.PageResult;
-import io.github.latcn.archbase.foundation.repository.IRepository;
+import io.github.latcn.archbase.example.application.query.OrderPageQuery;
 import io.github.latcn.archbase.example.domain.model.Order;
+import io.github.latcn.archbase.foundation.query.pagination.PageResult;
+import io.github.latcn.archbase.foundation.repository.IRepository;
 
 public interface IOrderRepository extends IRepository<Order, Long> {
-    PageResult<Order> queryByUserId(PageQuery pageQuery, Long userId);
+
+	PageResult<Order> queryByUserId(OrderPageQuery orderPageQuery);
+
 }

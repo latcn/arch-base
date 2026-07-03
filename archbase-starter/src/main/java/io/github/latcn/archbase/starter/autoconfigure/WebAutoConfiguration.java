@@ -15,15 +15,16 @@ import org.springframework.context.annotation.Configuration;
 @ConditionalOnClass(name = "org.springframework.web.bind.annotation.ControllerAdvice")
 public class WebAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean(GlobalExceptionHandler.class)
-    public GlobalExceptionHandler globalExceptionHandler() {
-        return new DefaultExceptionHandler();
-    }
+	@Bean
+	@ConditionalOnMissingBean(GlobalExceptionHandler.class)
+	public GlobalExceptionHandler globalExceptionHandler() {
+		return new DefaultExceptionHandler();
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public RequestParamResolver requestParamResolver(ObjectMapper objectMapper) {
-        return new RequestParamResolver(objectMapper);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public RequestParamResolver requestParamResolver(ObjectMapper objectMapper) {
+		return new RequestParamResolver(objectMapper);
+	}
+
 }

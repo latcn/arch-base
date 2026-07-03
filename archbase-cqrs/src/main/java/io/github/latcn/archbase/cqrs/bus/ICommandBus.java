@@ -5,5 +5,8 @@ import io.github.latcn.archbase.core.api.IResponse;
 
 public interface ICommandBus {
 
-    <T, R extends IResponse> R dispatch(ICommand<T> command);
+	void register(Class<? extends ICommand> commandType, ICommandHandler handler);
+
+	<R extends IResponse> R dispatch(ICommand command);
+
 }

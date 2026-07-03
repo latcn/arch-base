@@ -10,22 +10,21 @@ import org.springframework.stereotype.Component;
 @Component
 public class MybatisRepositoryFactory implements IRepositoryFactory, ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
+	private ApplicationContext applicationContext;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = applicationContext;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getMapper(Class<T> mapperClass) {
-        return applicationContext.getBean(mapperClass);
-    }
+	@Override
+	public <T> T getMapper(Class<T> mapperClass) {
+		return applicationContext.getBean(mapperClass);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <Entity, PO> IAssembler<Entity, PO> getAssembler() {
-        return applicationContext.getBean(IAssembler.class);
-    }
+	@Override
+	public <Entity, PO> IAssembler<Entity, PO> getAssembler() {
+		return applicationContext.getBean(IAssembler.class);
+	}
+
 }

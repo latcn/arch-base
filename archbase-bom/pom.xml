@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.latcn</groupId>
+        <artifactId>archbase-parent</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>archbase-bom</artifactId>
+    <packaging>pom</packaging>
+
+    <name>archbase-bom</name>
+    <description>archbase-bom</description>
+    <url>https://github.com/latcn/arch-base/archbase-bom</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>latcn</name>
+            <email>quantum_code@yeah.net</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>git://github.com/latcn/arch-base.git</connection>
+        <url>https://github.com/latcn/arch-base</url>
+    </scm>
+
+    <dependencyManagement>
+
+        <dependencies>
+            <dependency>
+                <groupId>io.github.latcn</groupId>
+                <artifactId>archbase-core</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.latcn</groupId>
+                <artifactId>archbase-foundation</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.latcn</groupId>
+                <artifactId>archbase-cqrs</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.latcn</groupId>
+                <artifactId>archbase-data-mybatis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.latcn</groupId>
+                <artifactId>archbase-web-spring</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.latcn</groupId>
+                <artifactId>archbase-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
+
+</project>

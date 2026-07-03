@@ -1,37 +1,40 @@
 package io.github.latcn.archbase.foundation.entity;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class BaseEntity<ID> {
-    private ID id;
+public abstract class BaseEntity<ID extends Serializable> {
 
-    public ID getId() {
-        return id;
-    }
+	private ID id;
 
-    public void setId(ID id) {
-        this.id = id;
-    }
+	public ID getId() {
+		return id;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BaseEntity<?> that = (BaseEntity<?>) o;
-        return Objects.equals(id, that.id);
-    }
+	public void setId(ID id) {
+		this.id = id;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		BaseEntity<?> that = (BaseEntity<?>) o;
+		return Objects.equals(id, that.id);
+	}
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "{id=" + id + "}";
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "{id=" + id + "}";
+	}
+
 }

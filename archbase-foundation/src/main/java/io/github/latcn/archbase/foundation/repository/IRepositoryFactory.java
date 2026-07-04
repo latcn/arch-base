@@ -6,6 +6,6 @@ public interface IRepositoryFactory {
 
 	<T> T getMapper(Class<T> mapperClass);
 
-	<Entity, PO> IAssembler<Entity, PO> getAssembler();
+	<Entity, DO> IAssembler<Entity, DO> getAssembler();
 
 }

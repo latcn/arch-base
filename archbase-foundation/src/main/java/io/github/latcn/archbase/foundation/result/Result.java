@@ -1,7 +1,10 @@
 package io.github.latcn.archbase.foundation.result;
 
 import io.github.latcn.archbase.core.exception.IErrorCode;
+import java.time.LocalDateTime;
+import lombok.Data;
 
+@Data
 public class Result<T> {
 
 	private String code;
@@ -10,10 +13,10 @@ public class Result<T> {
 
 	private T data;
 
-	private Long timestamp;
+	private LocalDateTime timestamp;
 
 	private Result() {
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = LocalDateTime.now();
 	}
 
 	public static <T> Result<T> success(T data) {
@@ -49,41 +52,10 @@ public class Result<T> {
 		return ResultCode.SUCCESS.getCode().equals(code);
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
-
-	public T getData() {
-		return data;
-	}
-
-	public void setData(T data) {
-		this.data = data;
-	}
-
-	public Long getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
-	}
-
 	@Override
 	public String toString() {
-		return "Result{code=" + code + ", msg=" + msg + ", data=" + data + "}";
+		return "Result{" + "code='" + code + '\'' + ", msg='" + msg + '\'' + ", data=" + data + ", timestamp="
+				+ timestamp + '}';
 	}
 
 }

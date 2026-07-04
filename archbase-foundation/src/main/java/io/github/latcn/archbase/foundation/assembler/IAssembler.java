@@ -3,18 +3,18 @@ package io.github.latcn.archbase.foundation.assembler;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface IAssembler<Entity, PO> {
+public interface IAssembler<Entity, DO> {
 
-	PO toPO(Entity entity);
+	DO toDO(Entity entity);
 
-	Entity toEntity(PO po);
+	Entity toEntity(DO doObj);
 
-	default List<PO> toPOList(List<Entity> entities) {
-		return entities.stream().map(this::toPO).collect(Collectors.toList());
+	default List<DO> toDOList(List<Entity> entities) {
+		return entities.stream().map(this::toDO).collect(Collectors.toList());
 	}
 
-	default List<Entity> toEntityList(List<PO> pos) {
-		return pos.stream().map(this::toEntity).collect(Collectors.toList());
+	default List<Entity> toEntityList(List<DO> dos) {
+		return dos.stream().map(this::toEntity).collect(Collectors.toList());
 	}
 
 }

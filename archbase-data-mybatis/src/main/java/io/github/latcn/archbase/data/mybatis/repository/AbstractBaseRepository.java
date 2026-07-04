@@ -24,44 +24,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 
 /**
- * 基础仓储实现抽象类 封装 Entity <-> PO 转换及通用 CRUD
+ * 基础仓储实现抽象类 封装 Entity <-> DO 转换及通用 CRUD
  *
  * @param <Entity> 领域实体类型（继承 BaseEntity）
- * @param <PO> 持久化对象类型（MyBatis-Plus 映射类）
+ * @param <DO> 数据库对象类型（MyBatis-Plus 映射类）
  * @param <ID> 标识类型
  */
-public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, ID extends Serializable>
+public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, DO, ID extends Serializable>
 		implements IRepository<Entity, ID> {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	protected BaseMapper<PO> baseMapper;
+	protected BaseMapper<DO> baseMapper;
 
 	@Autowired
-	protected IAssembler<Entity, PO> assembler;
+	protected IAssembler<Entity, DO> assembler;
 
 	@Override
 	public void save(Entity entity) {
-		PO po = assembler.toPO(entity);
+		DO doObj = assembler.toDO(entity);
 		if (entity.getId() == null) {
-			baseMapper.insert(po);
-			setIdToEntity(entity, po);
+			baseMapper.insert(doObj);
+			setIdToEntity(entity, doObj);
 		}
 		else {
-			baseMapper.updateById(po);
+			baseMapper.updateById(doObj);
 		}
 	}
 
 	@Override
 	public Entity findById(ID id) {
-		PO po = baseMapper.selectById(id);
-		if (po == null) {
+		DO doObj = baseMapper.selectById(id);
+		if (doObj == null) {
 			throw BaseException.of(ErrorCode.ENTITY_NOT_FOUND)
 				.set("id", id)
 				.set("entity", getEntityClass().getSimpleName());
 		}
-		return assembler.toEntity(po);
+		return assembler.toEntity(doObj);
 	}
 
 	@Override
@@ -79,8 +79,8 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 
 	@Override
 	public void delete(Entity entity) {
-		PO po = assembler.toPO(entity);
-		baseMapper.deleteById(getIdFromPO(po));
+		DO doObj = assembler.toDO(entity);
+		baseMapper.deleteById(getIdFromDO(doObj));
 	}
 
 	@Override
@@ -90,15 +90,15 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 
 	@Override
 	public boolean existsById(ID id) {
-		QueryWrapper<PO> wrapper = new QueryWrapper<>();
+		QueryWrapper<DO> wrapper = new QueryWrapper<>();
 		wrapper.eq(getIdFieldName(), id);
 		return baseMapper.selectCount(wrapper) > 0;
 	}
 
 	@Override
 	public List<Entity> findAll() {
-		List<PO> pos = baseMapper.selectList(null);
-		return assembler.toEntityList(pos);
+		List<DO> dos = baseMapper.selectList(null);
+		return assembler.toEntityList(dos);
 	}
 
 	/**
@@ -108,10 +108,10 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 	 */
 	@Override
 	public PageResult<Entity> dynamicPageQuery(PageQuery pageQuery) {
-		QueryWrapper<PO> wrapper = new QueryWrapper<>();
+		QueryWrapper<DO> wrapper = new QueryWrapper<>();
 
 		// 1. 应用条件树
-		ConditionParser.applyCondition(wrapper, pageQuery.getCondition(), getPOClass());
+		ConditionParser.applyCondition(wrapper, pageQuery.getCondition(), getDOClass());
 
 		// 2. 应用排序
 		if (pageQuery.getSorts() != null && !pageQuery.getSorts().isEmpty()) {
@@ -120,7 +120,7 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 				if (field == null || field.isEmpty())
 					continue;
 				// 字段校验：通过 TableInfo 检查是否存在
-				Map<String, String> columnMap = ConditionParser.getColumnMap(getPOClass());
+				Map<String, String> columnMap = ConditionParser.getColumnMap(getDOClass());
 				String column = columnMap.get(field);
 				if (column == null) {
 					log.debug("忽略未知排序字段: {}", field);
@@ -136,9 +136,9 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 		}
 
 		// 3. 执行分页
-		Page<PO> page = new Page<>(pageQuery.getPageNum(), pageQuery.getPageSize());
+		Page<DO> page = new Page<>(pageQuery.getPageNum(), pageQuery.getPageSize());
 		page.setSearchCount(pageQuery.isSearchCount());
-		Page<PO> result = baseMapper.selectPage(page, wrapper);
+		Page<DO> result = baseMapper.selectPage(page, wrapper);
 		List<Entity> entities = assembler.toEntityList(result.getRecords());
 		return PageResult.of(result.getTotal(), entities);
 	}
@@ -147,12 +147,12 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 	 * 动态查询（非分页）- 使用 PageQuery
 	 */
 	protected List<Entity> dynamicList(PageQuery pageQuery) {
-		QueryWrapper<PO> wrapper = new QueryWrapper<>();
-		ConditionParser.applyCondition(wrapper, pageQuery.getCondition(), getPOClass());
+		QueryWrapper<DO> wrapper = new QueryWrapper<>();
+		ConditionParser.applyCondition(wrapper, pageQuery.getCondition(), getDOClass());
 		// 排序
 		applySorts(wrapper, pageQuery.getSorts());
-		List<PO> pos = baseMapper.selectList(wrapper);
-		return assembler.toEntityList(pos);
+		List<DO> dos = baseMapper.selectList(wrapper);
+		return assembler.toEntityList(dos);
 	}
 
 	/**
@@ -160,10 +160,10 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 	 * @param wrapper
 	 * @param sorts
 	 */
-	private void applySorts(QueryWrapper<PO> wrapper, List<SortItem> sorts) {
+	private void applySorts(QueryWrapper<DO> wrapper, List<SortItem> sorts) {
 		if (sorts == null)
 			return;
-		Map<String, String> columnMap = ConditionParser.getColumnMap(getPOClass());
+		Map<String, String> columnMap = ConditionParser.getColumnMap(getDOClass());
 		for (SortItem sort : sorts) {
 			String column = columnMap.get(sort.getField());
 			if (column == null)
@@ -180,11 +180,11 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 	/**
 	 * 设置 ID 到实体（用于新增后回写 ID）
 	 */
-	protected void setIdToEntity(Entity entity, PO po) {
+	protected void setIdToEntity(Entity entity, DO doObj) {
 		try {
-			Method poGetIdMethod = po.getClass().getMethod("getId");
+			Method doGetIdMethod = doObj.getClass().getMethod("getId");
 			Method entitySetIdMethod = entity.getClass().getMethod("setId", Object.class);
-			Object id = poGetIdMethod.invoke(po);
+			Object id = doGetIdMethod.invoke(doObj);
 			entitySetIdMethod.invoke(entity, id);
 		}
 		catch (Exception e) {
@@ -193,15 +193,15 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 	}
 
 	/**
-	 * 从 PO 中获取 ID
+	 * 从 DO 中获取 ID
 	 */
-	protected ID getIdFromPO(PO po) {
+	protected ID getIdFromDO(DO doObj) {
 		try {
-			Method getter = po.getClass().getMethod("getId");
-			return (ID) getter.invoke(po);
+			Method getter = doObj.getClass().getMethod("getId");
+			return (ID) getter.invoke(doObj);
 		}
 		catch (Exception e) {
-			log.warn("获取 PO ID 失败", e);
+			log.warn("获取 DO ID 失败", e);
 			return null;
 		}
 	}
@@ -215,11 +215,11 @@ public abstract class AbstractBaseRepository<Entity extends BaseEntity<ID>, PO, 
 	}
 
 	/**
-	 * 获取 PO 类类型（用于 TableInfoHelper）
+	 * 获取 DO 类类型（用于 TableInfoHelper）
 	 */
-	protected Class<PO> getPOClass() {
+	protected Class<DO> getDOClass() {
 		Class<?>[] genericTypes = GenericTypeResolver.resolveTypeArguments(getClass(), AbstractBaseRepository.class);
-		return genericTypes != null && genericTypes.length > 0 ? (Class<PO>) genericTypes[1] : null;
+		return genericTypes != null && genericTypes.length > 0 ? (Class<DO>) genericTypes[1] : null;
 	}
 
 	/**

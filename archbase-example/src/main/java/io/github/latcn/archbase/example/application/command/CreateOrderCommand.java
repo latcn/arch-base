@@ -14,12 +14,4 @@ public class CreateOrderCommand implements ICommand {
 	@NotNull
 	private List<OrderItemDTO> items;
 
-	public Long getUserId() {
-		return userId;
-	}
-
-	public List<OrderItemDTO> getItems() {
-		return items;
-	}
-
 }

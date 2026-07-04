@@ -17,8 +17,7 @@ public class OrderPageQueryHandler implements IQueryHandler<OrderPageQuery, Orde
 
 	@Override
 	public OrderPageResponse handle(OrderPageQuery query) {
-		PageResult<Order> pageResult;
-		pageResult = orderRepository.queryByUserId(query);
+		PageResult<Order> pageResult = orderRepository.queryByUserId(query);
 		return new OrderPageResponse(pageResult);
 	}
 

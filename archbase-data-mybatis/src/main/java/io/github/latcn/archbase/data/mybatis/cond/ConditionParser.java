@@ -1,8 +1,6 @@
 package io.github.latcn.archbase.data.mybatis.cond;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import io.github.latcn.archbase.foundation.query.cond.*;
 import java.util.Collection;
 import java.util.Map;
@@ -10,112 +8,53 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 条件解析器：将条件树转换为 MyBatis-Plus QueryWrapper
- * <p>
- * 安全特性：字段名必须存在于实体类中，否则忽略（不抛异常）
- */
 public final class ConditionParser {
 
 	private static final Logger log = LoggerFactory.getLogger(ConditionParser.class);
 
-	/**
-	 * 缓存实体类的列名映射（属性名 → 列名）
-	 */
 	private static final Map<Class<?>, Map<String, String>> COLUMN_MAP_CACHE = new ConcurrentHashMap<>();
 
 	private ConditionParser() {
 	}
 
-	/**
-	 * 应用条件树到 QueryWrapper
-	 * @param wrapper QueryWrapper
-	 * @param condition 条件树根节点
-	 * @param entityClass 实体类类型（用于获取字段映射）
-	 * @param <T> 实体类型
-	 */
 	public static <T> void applyCondition(QueryWrapper<T> wrapper, Condition condition, Class<T> entityClass) {
 		if (condition == null) {
 			return;
 		}
 		Map<String, String> columnMap = getColumnMap(entityClass);
 		if (columnMap.isEmpty()) {
-			log.warn("实体类 {} 未加载 TableInfo，无法解析条件", entityClass.getName());
+			log.warn("实体类 {} 未加载字段映射，无法解析条件", entityClass.getName());
 			return;
 		}
-		doApply(wrapper, condition, columnMap);
-	}
-
-	/**
-	 * 递归应用条件
-	 */
-	private static <T> void doApply(QueryWrapper<T> wrapper, Condition condition, Map<String, String> columnMap) {
-		if (condition == null) {
-			return;
-		}
-
 		if (condition instanceof LogicGroup) {
-			LogicGroup group = (LogicGroup) condition;
-			if (group.getConditions() == null || group.getConditions().isEmpty()) {
-				return;
-			}
-
-			boolean isAnd = group.getLogic() == Logic.AND;
-			// 使用 wrapper.and() 或 wrapper.or() 包裹子条件
-			if (isAnd) {
-				wrapper.and(w -> {
-					for (Condition child : group.getConditions()) {
-						applyChild(w, child, columnMap);
-					}
-				});
-			}
-			else {
-				wrapper.or(w -> {
-					for (Condition child : group.getConditions()) {
-						applyChild(w, child, columnMap);
-					}
-				});
-			}
-		}
-		else if (condition instanceof FilterCondition) {
-			applyFilter(wrapper, (FilterCondition) condition, columnMap);
-		}
-		else {
-			log.warn("未知条件类型: {}", condition.getClass().getName());
-		}
-	}
-
-	/**
-	 * 处理子条件（用于 and/or 回调内部）
-	 */
-	private static <T> void applyChild(QueryWrapper<T> wrapper, Condition condition, Map<String, String> columnMap) {
-		if (condition instanceof LogicGroup) {
-			// 递归处理嵌套逻辑组
-			LogicGroup group = (LogicGroup) condition;
-			boolean isAnd = group.getLogic() == Logic.AND;
-			if (isAnd) {
-				wrapper.and(w -> {
-					for (Condition child : group.getConditions()) {
-						applyChild(w, child, columnMap);
-					}
-				});
-			}
-			else {
-				wrapper.or(w -> {
-					for (Condition child : group.getConditions()) {
-						applyChild(w, child, columnMap);
-					}
-				});
-			}
+			applyLogicGroup(wrapper, (LogicGroup) condition, columnMap);
 		}
 		else if (condition instanceof FilterCondition) {
 			applyFilter(wrapper, (FilterCondition) condition, columnMap);
 		}
 	}
 
-	/**
-	 * 应用单个过滤条件
-	 */
+	private static <T> void applyLogicGroup(QueryWrapper<T> wrapper, LogicGroup group, Map<String, String> columnMap) {
+		if (group.getConditions() == null || group.getConditions().isEmpty()) {
+			return;
+		}
+
+		boolean isAnd = group.getLogic() == Logic.AND;
+		boolean first = true;
+		for (Condition child : group.getConditions()) {
+			if (!first && !isAnd) {
+				wrapper.or();
+			}
+			if (child instanceof LogicGroup) {
+				wrapper.nested(w -> applyLogicGroup(w, (LogicGroup) child, columnMap));
+			}
+			else if (child instanceof FilterCondition) {
+				applyFilter(wrapper, (FilterCondition) child, columnMap);
+			}
+			first = false;
+		}
+	}
+
 	private static <T> void applyFilter(QueryWrapper<T> wrapper, FilterCondition filter,
 			Map<String, String> columnMap) {
 		String field = filter.getField();
@@ -123,7 +62,6 @@ public final class ConditionParser {
 			return;
 		}
 
-		// 字段名到列名的映射（忽略不存在的字段）
 		String column = columnMap.get(field);
 		if (column == null) {
 			log.debug("忽略未知字段: {}", field);
@@ -188,9 +126,8 @@ public final class ConditionParser {
 				}
 				break;
 			case BETWEEN:
-				if (value != null && value2 != null) {
+				if (value != null && value2 != null)
 					wrapper.between(column, value, value2);
-				}
 				break;
 			case IS_NULL:
 				wrapper.isNull(column);
@@ -203,27 +140,54 @@ public final class ConditionParser {
 		}
 	}
 
-	/**
-	 * 获取实体类的列名映射（带缓存）
-	 */
 	public static Map<String, String> getColumnMap(Class<?> entityClass) {
 		return COLUMN_MAP_CACHE.computeIfAbsent(entityClass, clazz -> {
-			TableInfo tableInfo = TableInfoHelper.getTableInfo(clazz);
-			if (tableInfo == null) {
-				log.warn("无法获取实体类 {} 的 TableInfo，字段映射为空", clazz.getName());
-				return new ConcurrentHashMap<>();
+			Map<String, String> columnMap = new ConcurrentHashMap<>();
+			for (java.lang.reflect.Field field : clazz.getDeclaredFields()) {
+				if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+					continue;
+				}
+				String propertyName = field.getName();
+				String columnName = resolveColumnName(field);
+				columnMap.put(propertyName, columnName);
 			}
-			Map<String, String> map = new ConcurrentHashMap<>();
-			tableInfo.getFieldList().forEach(fieldInfo -> {
-				map.put(fieldInfo.getProperty(), fieldInfo.getColumn());
-			});
-			// 主键
-			if (tableInfo.getKeyProperty() != null && tableInfo.getKeyColumn() != null) {
-				map.put(tableInfo.getKeyProperty(), tableInfo.getKeyColumn());
-			}
-			log.debug("加载实体类 {} 的字段映射，共 {} 个字段", clazz.getSimpleName(), map.size());
-			return map;
+			log.debug("加载实体类 {} 的字段映射，共 {} 个字段", clazz.getSimpleName(), columnMap.size());
+			return columnMap;
 		});
+	}
+
+	private static String resolveColumnName(java.lang.reflect.Field field) {
+		com.baomidou.mybatisplus.annotation.TableField tableField = field
+			.getAnnotation(com.baomidou.mybatisplus.annotation.TableField.class);
+		if (tableField != null && !tableField.value().isEmpty()) {
+			return tableField.value();
+		}
+		com.baomidou.mybatisplus.annotation.TableId tableId = field
+			.getAnnotation(com.baomidou.mybatisplus.annotation.TableId.class);
+		if (tableId != null && !tableId.value().isEmpty()) {
+			return tableId.value();
+		}
+		return toUnderlineCase(field.getName());
+	}
+
+	private static String toUnderlineCase(String str) {
+		if (str == null || str.isEmpty()) {
+			return str;
+		}
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < str.length(); i++) {
+			char c = str.charAt(i);
+			if (Character.isUpperCase(c)) {
+				if (i > 0) {
+					sb.append('_');
+				}
+				sb.append(Character.toLowerCase(c));
+			}
+			else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
 	}
 
 }

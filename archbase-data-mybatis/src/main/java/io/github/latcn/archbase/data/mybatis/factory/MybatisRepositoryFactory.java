@@ -23,7 +23,7 @@ public class MybatisRepositoryFactory implements IRepositoryFactory, Application
 	}
 
 	@Override
-	public <Entity, PO> IAssembler<Entity, PO> getAssembler() {
+	public <Entity, DO> IAssembler<Entity, DO> getAssembler() {
 		return applicationContext.getBean(IAssembler.class);
 	}
 

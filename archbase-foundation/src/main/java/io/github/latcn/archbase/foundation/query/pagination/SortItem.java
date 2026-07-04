@@ -1,22 +1,14 @@
 package io.github.latcn.archbase.foundation.query.pagination;
 
 import java.util.Objects;
+import lombok.Data;
 
-/**
- * 排序项
- *
- * <p>
- * 表示一个字段的排序规则（字段名 + 排序方向）
- */
+@Data
 public class SortItem {
 
-	/** 排序字段名 */
 	private String field;
 
-	/** 排序方向 */
 	private SortDirection direction;
-
-	// ==================== 构造方法 ====================
 
 	public SortItem() {
 	}
@@ -26,50 +18,18 @@ public class SortItem {
 		this.direction = direction;
 	}
 
-	// ==================== 静态工厂方法 ====================
-
-	/**
-	 * 创建升序排序项
-	 */
 	public static SortItem asc(String field) {
 		return new SortItem(field, SortDirection.ASC);
 	}
 
-	/**
-	 * 创建降序排序项
-	 */
 	public static SortItem desc(String field) {
 		return new SortItem(field, SortDirection.DESC);
 	}
 
-	// ==================== Getter/Setter ====================
-
-	public String getField() {
-		return field;
-	}
-
-	public void setField(String field) {
-		this.field = field;
-	}
-
-	public SortDirection getDirection() {
-		return direction;
-	}
-
-	public void setDirection(SortDirection direction) {
-		this.direction = direction;
-	}
-
-	/**
-	 * 判断是否为升序
-	 */
 	public boolean isAsc() {
 		return direction == SortDirection.ASC;
 	}
 
-	/**
-	 * 判断是否为降序
-	 */
 	public boolean isDesc() {
 		return direction == SortDirection.DESC;
 	}

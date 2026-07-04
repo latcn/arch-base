@@ -2,7 +2,9 @@ package io.github.latcn.archbase.example.domain.model;
 
 import io.github.latcn.archbase.foundation.valueobject.IValueObject;
 import java.math.BigDecimal;
+import lombok.Data;
 
+@Data
 public class OrderItem implements IValueObject {
 
 	private Long productId;
@@ -22,30 +24,6 @@ public class OrderItem implements IValueObject {
 
 	public BigDecimal getSubtotal() {
 		return price.multiply(BigDecimal.valueOf(quantity));
-	}
-
-	public Long getProductId() {
-		return productId;
-	}
-
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-
-	public Integer getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(Integer quantity) {
-		this.quantity = quantity;
-	}
-
-	public BigDecimal getPrice() {
-		return price;
-	}
-
-	public void setPrice(BigDecimal price) {
-		this.price = price;
 	}
 
 }

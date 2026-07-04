@@ -33,6 +33,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.github.latcn</groupId>
             <artifactId>archbase-core</artifactId>
         </dependency>

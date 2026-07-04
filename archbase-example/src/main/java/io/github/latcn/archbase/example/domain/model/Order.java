@@ -4,8 +4,13 @@ import io.github.latcn.archbase.core.exception.BaseException;
 import io.github.latcn.archbase.core.exception.ErrorCode;
 import io.github.latcn.archbase.foundation.entity.BaseEntity;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class Order extends BaseEntity<Long> {
 
 	private Long userId;
@@ -15,6 +20,10 @@ public class Order extends BaseEntity<Long> {
 	private OrderStatus status;
 
 	private List<OrderItem> items;
+
+	private LocalDateTime createTime;
+
+	private LocalDateTime updateTime;
 
 	public static Order create(Long userId, List<OrderItem> items) {
 		Order order = new Order();
@@ -39,38 +48,6 @@ public class Order extends BaseEntity<Long> {
 			throw BaseException.of(ErrorCode.INVALID_PARAMETER).set("status", status);
 		}
 		this.status = OrderStatus.CANCELLED;
-	}
-
-	public Long getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
-
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
-
-	public OrderStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(OrderStatus status) {
-		this.status = status;
-	}
-
-	public List<OrderItem> getItems() {
-		return items;
-	}
-
-	public void setItems(List<OrderItem> items) {
-		this.items = items;
 	}
 
 }
